@@ -1,16 +1,3 @@
----
-title: ScamShield AI
-emoji: 🛡️
-colorFrom: green
-colorTo: gray
-sdk: static
-app_build_command: npm run build:space
-app_file: dist/index.html
-pinned: false
-license: mit
-short_description: Explainable AI scam-message detector with React, Flask and NLP
----
-
 # ScamShield AI
 
 An explainable AI scam-message detector built as a third-year portfolio project. Paste an SMS or WhatsApp message to get a **SCAM / LEGIT** verdict, confidence score, risk level, plain-English warning signals, and persistent history.
@@ -37,22 +24,23 @@ scam-detector/
 │   ├── public/         # Original project imagery
 │   └── src/            # React UI and responsive CSS
 ├── tests/              # Flask API smoke tests
-├── package.json        # Hugging Face Static Space build command
+├── package.json        # Optional static build helper
 ├── Dockerfile          # Optional portable container deployment
-├── HF_DEPLOYMENT.md    # Free Static Space + PythonAnywhere guide
+├── PYTHONANYWHERE_DEPLOYMENT.md  # Free one-service deployment guide
 ├── requirements.txt
 └── README.md
 ```
 
 ## Free live deployment — no card
 
-For accounts where Docker Spaces are paid, deploy the exact React interface as a free **Hugging Face Static Space** and the Flask API on a free **PythonAnywhere Beginner** account.
+The complete app can run from one free **PythonAnywhere Beginner** web app:
 
-- Hugging Face builds and hosts the React/Vite frontend.
-- PythonAnywhere runs Flask, scikit-learn, SQLite, and the REST API.
-- The frontend reads the backend URL from the Space variable `API_BASE_URL`.
+- React is built locally with Vite and the production `frontend/dist` output is committed to GitHub.
+- Flask serves the compiled React site and all `/api` routes from the same domain.
+- scikit-learn runs the NLP detector and SQLite stores demo history.
+- No Docker, GPU, paid database, custom domain, or hosting card is needed.
 
-See **[HF_DEPLOYMENT.md](HF_DEPLOYMENT.md)** for the complete no-card guide. The `Dockerfile` is retained only as an optional portable deployment configuration; it is not used by this free setup.
+See **[PYTHONANYWHERE_DEPLOYMENT.md](PYTHONANYWHERE_DEPLOYMENT.md)** for the complete guide. The `Dockerfile` remains only as an optional portable configuration.
 
 ## Run locally
 

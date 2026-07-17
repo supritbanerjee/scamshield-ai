@@ -7,6 +7,9 @@ backend/scamshield.db
 # Frontend
 node_modules/
 dist/
+# PythonAnywhere serves the committed Vite production build.
+!frontend/dist/
+!frontend/dist/**
 .env
 .env.*
 !.env.example

@@ -352,8 +352,10 @@ Converts one SQLite row to a regular dictionary for JSON.
 Every response receives:
 
 - `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
+- a `Content-Security-Policy` that allows embedding only by the app itself and Hugging Face
 - a strict referrer policy
+
+The older `X-Frame-Options: DENY` setting is intentionally not used because Hugging Face displays Spaces inside an iframe.
 
 #### API routes
 
@@ -414,7 +416,7 @@ This contains the page components and browser-side logic.
 
 #### `API_BASE`
 
-Uses `VITE_API_URL` when deployed and defaults to `http://localhost:5000` during local development.
+Uses three levels: `VITE_API_URL` for conventional deployments, the Hugging Face Static Space variable `window.huggingface.variables.API_BASE_URL` for the free live demo, and finally relative `/api` URLs for local Vite development. Vite proxies local `/api` requests to Flask on port 5000.
 
 #### `examples`
 
@@ -608,13 +610,29 @@ It tests:
 
 It changes `SCAMSHIELD_DB` to a test-only database before importing the app.
 
+### Root `package.json`
+
+Defines `npm run build:space` for the free Hugging Face Static Space. It installs the frontend packages, builds the Vite app, and copies the output to root `dist/` for static hosting.
+
+### `requirements-pythonanywhere.txt`
+
+Uses compatible dependency ranges so a free PythonAnywhere virtual environment can reuse its preinstalled scientific Python packages and conserve disk space.
+
+### `Dockerfile`
+
+An optional portable deployment using two stages: Node compiles React, then Python runs Flask/scikit-learn and the compiled site through Gunicorn. Docker is not used by the recommended free deployment because it is marked paid on some Hugging Face accounts.
+
+### `.dockerignore`
+
+Keeps `.venv`, `node_modules`, local builds, databases, tests, caches, and secrets out of an optional Docker build context.
+
+### `HF_DEPLOYMENT.md`
+
+The complete no-card deployment guide: Hugging Face Static hosts React, while a PythonAnywhere Beginner web app runs Flask, scikit-learn, SQLite, and the API.
+
 ### `render.yaml`
 
-Infrastructure configuration for Render:
-
-- deploys Flask with Gunicorn as a Python web service
-- deploys the Vite output as a static site
-- declares the `VITE_API_URL` environment variable
+An optional Render configuration retained for reference. It is not required for the recommended Hugging Face deployment.
 
 ### `.gitignore`
 
@@ -693,3 +711,57 @@ python backend/evaluate.py
 
 ---
 
+## 10. How to explain it in an interview
+
+A concise explanation:
+
+> ScamShield is an explainable full-stack NLP application. The React frontend sends a suspicious message to a Flask REST API. The backend converts the text into word and character TF-IDF features and uses Logistic Regression to estimate scam probability. I blend that prediction with a transparent regular-expression safety layer so the product can explain signals such as urgency, suspicious links, OTP requests, and payment pressure. The result is stored in SQLite and shown with a verdict, confidence, risk level, evidence, and history controls.
+
+Why Logistic Regression:
+
+> It is fast, interpretable, strong for sparse TF-IDF text features, and suitable for a third-year project that must run locally without a GPU or paid API.
+
+Why a hybrid model:
+
+> Pure ML can identify learned wording, while deterministic rules improve explainability and catch high-risk patterns. The combination is easier to justify than presenting a black-box label.
+
+Why both word and character features:
+
+> Word n-grams capture phrases such as “processing fee,” while character n-grams are more robust to spelling variation, abbreviations, and suspicious URL fragments.
+
+---
+
+## 11. Honest limitations
+
+Do not claim that this system guarantees scam detection.
+
+Current limitations:
+
+- small hand-curated seed dataset
+- primarily English text
+- no authentication or separate histories per user
+- raw messages are stored locally in SQLite
+- probability is not calibrated on a large independent dataset
+- regex patterns cannot understand every context
+- SQLite on some free cloud hosts may be ephemeral
+- no image, voice, QR-code, or attachment analysis
+- no automated retraining pipeline
+
+These limitations are normal for a student project when stated honestly.
+
+---
+
+## 12. Strong future improvements
+
+1. Train on a larger independently reviewed dataset.
+2. Add Hindi, Marathi, and Hinglish support.
+3. Use calibrated probabilities and a separate untouched test set.
+4. Add user accounts and private per-user history.
+5. Hash, redact, encrypt, or avoid storing sensitive raw message content.
+6. Add URL-domain reputation checks in a safe backend service.
+7. Add OCR for scam screenshots.
+8. Add model/version monitoring and feedback-based retraining.
+9. Store production data in PostgreSQL.
+10. Add Docker, CI/CD, rate limiting, and authentication.
+
+The best next step for resume impact would be multilingual support plus deployment with a public demo URL.

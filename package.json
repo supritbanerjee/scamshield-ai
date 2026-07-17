@@ -1,0 +1,8 @@
+{
+  "name": "scamshield-space-builder",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build:space": "npm --prefix frontend ci && npm --prefix frontend run build && rm -rf dist && cp -R frontend/dist dist"
+  }
+}

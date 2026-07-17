@@ -1,0 +1,33 @@
+# Git and editor metadata
+.git
+.gitignore
+.vscode
+.idea
+
+# Local Python files
+.venv
+venv
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+backend/scamshield.db
+tests/test_scans.db
+
+# Local frontend output and dependencies
+frontend/node_modules
+frontend/dist
+node_modules
+dist
+
+# Local environment/secrets
+.env
+.env.*
+!frontend/.env.example
+
+# Files not needed in the runtime image
+tests
+image-search
+*.zip
+.DS_Store

@@ -7,16 +7,19 @@ from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 from model import get_detector
 
 BASE_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = BASE_DIR.parent
+FRONTEND_DIST = PROJECT_DIR / "frontend" / "dist"
 DB_PATH = Path(os.getenv("SCAMSHIELD_DB", BASE_DIR / "scamshield.db"))
 MAX_MESSAGE_LENGTH = 5000
 
-app = Flask(__name__)
+# Flask serves both the JSON API and the compiled React site in production.
+app = Flask(__name__, static_folder=None)
 app.config["JSON_SORT_KEYS"] = False
 CORS(app, resources={r"/api/*": {"origins": os.getenv("FRONTEND_ORIGIN", "*")}})
 
@@ -61,7 +64,10 @@ def serialize_scan(row: sqlite3.Row) -> dict:
 @app.after_request
 def add_security_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
+    # Hugging Face displays Spaces inside an iframe, so allow only HF and self.
+    response.headers["Content-Security-Policy"] = (
+        "frame-ancestors 'self' https://huggingface.co https://*.huggingface.co"
+    )
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
 
@@ -150,6 +156,31 @@ def delete_scan(scan_id: int):
     if cursor.rowcount == 0:
         return jsonify({"error": "Scan not found."}), 404
     return jsonify({"message": "Scan deleted."})
+
+
+@app.get("/")
+def serve_frontend():
+    """Serve the compiled React entry page in Docker/production."""
+    if not (FRONTEND_DIST / "index.html").is_file():
+        return jsonify({
+            "message": "Frontend build not found. Run npm run build in frontend/.",
+            "api_health": "/api/health",
+        }), 404
+    return send_from_directory(FRONTEND_DIST, "index.html")
+
+
+@app.get("/<path:asset_path>")
+def serve_frontend_asset(asset_path: str):
+    """Serve Vite assets and fall back to index.html for client routes."""
+    if asset_path.startswith("api/"):
+        return jsonify({"error": "Endpoint not found."}), 404
+
+    requested_file = FRONTEND_DIST / asset_path
+    if requested_file.is_file():
+        return send_from_directory(FRONTEND_DIST, asset_path)
+    if (FRONTEND_DIST / "index.html").is_file():
+        return send_from_directory(FRONTEND_DIST, "index.html")
+    return jsonify({"error": "Frontend build not found."}), 404
 
 
 @app.errorhandler(404)

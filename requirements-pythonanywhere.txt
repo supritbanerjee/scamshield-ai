@@ -1,0 +1,4 @@
+# Looser versions can reuse PythonAnywhere's preinstalled scientific packages.
+Flask>=3.0,<4
+Flask-Cors>=4,<7
+scikit-learn>=1.4,<2

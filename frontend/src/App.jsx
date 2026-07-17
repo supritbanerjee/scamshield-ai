@@ -26,7 +26,12 @@ import {
   Zap,
 } from "lucide-react";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// API location priority:
+// 1) Vite environment variable for a conventional deployment.
+// 2) Hugging Face Static Space variable for the free hosted demo.
+// 3) Relative /api path, proxied by Vite to Flask during local development.
+const HF_API_URL = window.huggingface?.variables?.API_BASE_URL;
+const API_BASE = (import.meta.env.VITE_API_URL || HF_API_URL || "").replace(/\/$/, "");
 
 const examples = [
   {
@@ -255,7 +260,7 @@ function Scanner({ onScanSaved }) {
       setResult(data);
       onScanSaved?.();
     } catch (err) {
-      setError(err.message === "Failed to fetch" ? "The Flask API is offline. Start the backend on port 5000." : err.message);
+      setError(err.message === "Failed to fetch" ? "Could not reach the Flask API. Check the hosted backend, or start it on port 5000 locally." : err.message);
     } finally {
       setLoading(false);
     }

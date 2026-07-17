@@ -4,6 +4,15 @@ An explainable AI scam-message detector built as a third-year portfolio project.
 
 ![Stack](https://img.shields.io/badge/stack-Flask%20%2B%20React-111111) ![NLP](https://img.shields.io/badge/NLP-TF--IDF%20%2B%20Logistic%20Regression-b8ff42)
 
+## Live Demo
+
+- **Website:** https://supritbanerjee.pythonanywhere.com/
+- **API Health:** https://supritbanerjee.pythonanywhere.com/api/health
+- **Source Code:** https://github.com/supritbanerjee/scamshield-ai
+
+> The free PythonAnywhere web app may require a reload after a period of inactivity.
+
+
 ## Highlights
 
 - Real NLP pipeline: word + character TF-IDF and logistic regression
@@ -103,15 +112,22 @@ pip install -r requirements-dev.txt
 pytest -q
 python backend/evaluate.py
 ```
+## Screenshots
 
-`evaluate.py` runs a stratified 5-fold baseline on the bundled seed corpus. Treat it as a development check—not a production performance claim.
+### Landing Page
 
-## Resume bullets
+![ScamShield AI landing page](docs/screenshots/Screenshot 2026-07-17 185754.png)
 
-- Built an explainable scam-message classifier using dual TF-IDF features and logistic regression, augmented with a transparent risk-signal engine for phishing, credential theft, and payment-pressure patterns.
-- Designed a Flask REST API with SQLite persistence, input validation, CORS, security headers, and complete history-management endpoints.
-- Developed an original responsive React interface featuring confidence visualisation, evidence-based results, sample scenarios, scan history, and custom editorial artwork.
+### Explainable Scam Result
 
-## Responsible-use note
+![ScamShield AI scam analysis](docs/screenshots/Screenshot 2026-07-17 190027.png)
 
-ScamShield is a learning project and decision-support tool, not a guarantee. Users should verify high-stakes requests through official apps, websites, or phone numbers and never share an OTP, PIN, CVV, or password.
+### Scan History
+
+![ScamShield AI history](docs/screenshots/Screenshot 2026-07-17 185901.png)
+
+### Bonus Screenshots of the website
+
+![](docs/screenshots/Screenshot 2026-07-17 185808.png)
+![](docs/screenshots/Screenshot 2026-07-17 185835.png)
+

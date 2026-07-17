@@ -321,7 +321,7 @@ function Scanner({ onScanSaved }) {
             </div>
             {error && <p className="error-message"><CircleAlert size={15} /> {error}</p>}
             <div className="composer-footer">
-              <div className="privacy-note"><LockKeyhole size={16} /><span>Processed on your own Flask server.<br />No external AI API.</span></div>
+              <div className="privacy-note"><LockKeyhole size={16} /><span>Processed by the project's Flask server.<br />No external AI API.</span></div>
               <button className="analyze-button" onClick={analyze} disabled={loading}>
                 {loading ? <><LoaderCircle className="spin" size={18} /> ANALYZING</> : <>ANALYZE MESSAGE <ArrowRight size={18} /></>}
               </button>
